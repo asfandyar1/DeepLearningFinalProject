@@ -91,7 +91,7 @@ if __name__ == "__main__":
 	#and storing the images/labels in a single file that can be used for loading with
 	#CarLicensePlatesPickle class. Also gives the option to resize the data before storing it.
 	parser = argparse.ArgumentParser()
-	parser.add_argument('paths', help='Paths from where to get data')
+	parser.add_argument('paths', help='Path from where to get data')
 	parser.add_argument('output', help='Output pickle file')
 	parser.add_argument('--width', default=None, help='Desired image width')
 	parser.add_argument('--height', default=None, help='Desired image height')
