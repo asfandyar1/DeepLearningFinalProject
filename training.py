@@ -130,12 +130,12 @@ class Experiment:
                 total += len(labels)
                 result += (metric(outputs, labels)).sum().item()
 
-    return result / total
+        return result / total
 
-def store(self):
-    with open(self.path +'/info.pickle', 'wb') as fp:
-        pickle.dump({'args':self.args, 'epoch': self.epoch_n, 'benchmarks': self.benchmarks}, fp)
-    
+    def store(self):
+        with open(self.path +'/info.pickle', 'wb') as fp:
+            pickle.dump({'args':self.args, 'epoch': self.epoch_n, 'benchmarks': self.benchmarks}, fp)
+        
     def updateResults(self, num_epochs):
         model_path = self.path + '/model_{}.ckpt'.format(self.epoch_n)
         self.benchmarks.append(model_path)
@@ -156,7 +156,7 @@ if __name__ == "__main__":
         'optimizer_args' : dict(lr = 0.0001, weight_decay=1e-4),
     }
 
-    PATH_TO_TRAINED_MODEL = "path/to/trained/model.ckp" # replace path with your personal path
+    PATH_TO_TRAINED_MODEL = "../Desktop" # replace path with your personal path
 
     exp = Experiment(PATH_TO_TRAINED_MODEL, arguments)
     exp.train(train_loader, num_epochs=6, loss_freq=25)
