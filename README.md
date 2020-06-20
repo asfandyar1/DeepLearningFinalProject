@@ -14,7 +14,7 @@ training.py -h
 
 ## Training
 
-To train a model and store it to a file, along with information about the training loss, run script training.py. To get more information run:
+To train a model and store it to a file, along with information about the training loss, run script training.py (You have to change the path in the script to your personal task, in the main section of the script). To get more information run:
 ````
 dataloader.py -h
 ````
