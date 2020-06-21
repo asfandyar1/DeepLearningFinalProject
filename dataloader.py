@@ -10,8 +10,8 @@ def to_box(coord):
 	return [coord[0], coord[1], coord[0] + coord[2], coord[1] + coord[3]]
 
 def getLabeledData(image_file, text_file, transform=None):
+	#print(image_file, text_file)
 	image = Image.open(image_file)
-
 	labels = {}
 
 	with open(text_file) as label_file:
@@ -49,6 +49,7 @@ def getLabeledData(image_file, text_file, transform=None):
 		labels['char_positions'] = torch.as_tensor(labels['char_positions'], dtype=torch.float32)
 		if transform != None:
 			return transform(image, labels)
+		return image, labels
 
 
 class CarLicensePlatesFiles(torch.utils.data.Dataset):
@@ -67,7 +68,7 @@ class CarLicensePlatesFiles(torch.utils.data.Dataset):
 		return len(self.image_files)
 
 	def __getitem__(self, i):
-		return getLabeledData(self.image_files[i], self.text_files[i])
+		return getLabeledData(self.image_files[i], self.text_files[i], transform=self.transform)
 
 class CarLicensePlatesPickle(torch.utils.data.Dataset):
 	# Initialization method for the dataset
@@ -93,8 +94,8 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('paths', help='Path from where to get data')
 	parser.add_argument('output', help='Output pickle file')
-	parser.add_argument('--width', default=None, help='Desired image width')
-	parser.add_argument('--height', default=None, help='Desired image height')
+	parser.add_argument('--width', type=int, default=None, help='Desired image width')
+	parser.add_argument('--height', type=int, default=None, help='Desired image height')
 	args = parser.parse_args()
 	transform = Compose([
 		Resize(args.width, args.height)]
