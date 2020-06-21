@@ -159,16 +159,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('datapath', help='Path to data stored with pickle')
     parser.add_argument('modelpath', help='Path in which to store the model and logs')
-    parser.add_argument('-e', '--epochs', default=6, help='Number of epochs to train')
-    parser.add_argument('-l' '--load', default=None, help='Path from which to load an already trained model')
-    parser.add_argument('-b', '--batch', default=12, help='Training minibatch size')
-    parser.parse_args()
+    parser.add_argument('-e', '--epochs', type=int, default=6, help='Number of epochs to train')
+    parser.add_argument('-l', '--loadpath', default=None, help='Path from which to load an already trained model')
+    parser.add_argument('-b', '--batch', type=int, default=12, help='Training minibatch size')
+    args = parser.parse_args()
     transform = tf.Compose([tf.SetBoxLabel('vehicle_position', 'vehicle_type'), tf.ToTensor()])
-    dataset = CarLicensePlatesPickle(parser.datapath, transform=transform)
-    train_loader = torch.utils.data.DataLoader(dataset, batch_size=parser.batch, shuffle=True, collate_fn=tf.collate_fn)
+    dataset = CarLicensePlatesPickle(args.datapath, transform=transform)
+    train_loader = torch.utils.data.DataLoader(dataset, batch_size=args.batch, shuffle=True, collate_fn=tf.collate_fn)
     exp = None
-    if parser.load is not None:
-        exp = Experiment.load(parser.load)
+    if args.loadpath is not None:
+        exp = Experiment.load(args.loadpath)
     else:
-        exp = Experiment(parser.modelpath, arguments)
-    exp.train(train_loader, num_epochs=parser.epochs, loss_freq=25)
+        exp = Experiment(args.modelpath, arguments)
+    exp.train(train_loader, num_epochs=args.epochs, loss_freq=25)
