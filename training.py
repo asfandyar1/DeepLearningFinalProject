@@ -171,4 +171,5 @@ if __name__ == "__main__":
         exp = Experiment.load(args.loadpath)
     else:
         exp = Experiment(args.modelpath, arguments)
+    print('Number of parameters:',sum(p.numel() for p in exp.model.parameters() if p.requires_grad))
     exp.train(train_loader, num_epochs=args.epochs, loss_freq=25)
