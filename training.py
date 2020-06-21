@@ -6,13 +6,14 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 import torch
-import json
 import pickle
 import pandas as pd
-import matplotlib.pyplot as plt
 import os
 import math
+from models import SqueezeNetFasterRCNN
+from dataloader import CarLicensePlatesPickle
 
+import transforms as tf
 
 class Logger:
     def __init__(self, path):
@@ -155,8 +156,19 @@ if __name__ == "__main__":
         'optimizer' : optim.Adam,
         'optimizer_args' : dict(lr = 0.0001, weight_decay=1e-4),
     }
-
-    PATH_TO_TRAINED_MODEL = "../Desktop" # replace path with your personal path
-
-    exp = Experiment(PATH_TO_TRAINED_MODEL, arguments)
-    exp.train(train_loader, num_epochs=6, loss_freq=25)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('datapath', help='Path to data stored with pickle')
+    parser.add_argument('modelpath', help='Path in which to store the model and logs')
+    parser.add_argument('-e', '--epochs', default=6, help='Number of epochs to train')
+    parser.add_argument('-l' '--load', default=None, help='Path from which to load an already trained model')
+    parser.add_argument('-b', '--batch', default=12, help='Training minibatch size')
+    parser.parse_args()
+    transform = tf.Compose([tf.SetBoxLabel('vehicle_position', 'vehicle_type'), tf.ToTensor()])
+    dataset = CarLicensePlatesPickle(parser.datapath, transform=transform)
+    train_loader = torch.utils.data.DataLoader(dataset, batch_size=parser.batch, shuffle=True, collate_fn=tf.collate_fn)
+    exp = None
+    if parser.load is not None:
+        exp = Experiment.load(parser.load)
+    else:
+        exp = Experiment(parser.modelpath, arguments)
+    exp.train(train_loader, num_epochs=parser.epochs, loss_freq=25)
